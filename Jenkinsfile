@@ -1,32 +1,12 @@
-pipeline {
-    agent {
-        docker {
-            image 'maven:3.9.0'
-            args '-v /root/.m2:/root/.m2'
-        }
-    }
-    stages {
-        stage('Build') {
-            steps {
-                bat 'mvn -B -DskipTests clean package'
-            }
-        }
+podTemplate(containers: [containerTemplate(name: 'maven', image: 'maven', command: 'sleep', args: 'infinity')]) {
+  
+    node(POD_LABEL) {
 
-        stage('Test') {
-            steps {
-                bat 'mvn test'
-            }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
-                }
-            }
-        }
-        
-        stage('Deliver') {
-            steps {
-                bat './jenkins/scripts/deliver.bat'
-            }
-        }
-    }
+    checkout scm
+    container('maven') {
+      sh 'mvn -B -ntp -Dmaven.test.failure.ignore verify'
+     }
+
+    junit '**/target/surefire-reports/TEST-*.xml'
+  }
 }
