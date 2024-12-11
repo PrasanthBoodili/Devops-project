@@ -10,7 +10,7 @@ test('renders welcome message', () => {
 
 test('renders simple description', () => {
   render(<App />);
-  const descriptionElement = screen.getByText('This demonstates the completed pipeline.');
+  const descriptionElement = screen.getByText('This demonstrates the completed pipeline.');
   expect(descriptionElement).toBeInTheDocument();
 });
 
